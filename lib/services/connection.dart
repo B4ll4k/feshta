@@ -6,7 +6,18 @@ import '../models/artists.dart';
 import '../models/hosts.dart';
 
 class ApiConnection {
-  void getEvents(Uri url) {
-    http.post(url).then((http.Response response) => {print(response.body)});
+  void getEvents(Uri url, List<Event> events) {
+    http.post(url).then((http.Response response) => {
+          //print(response.body)
+          for (var item in json.decode(response.body))
+            {
+              events.add(Event(
+                  id: item['id'],
+                  image: item['image'],
+                  name: item['name'],
+                  total: item['total']))
+            }
+        });
+    //print(events);
   }
 }

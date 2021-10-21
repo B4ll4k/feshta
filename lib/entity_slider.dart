@@ -33,7 +33,7 @@ class EntitySliderWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                     image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage('images/$image.jpg'))),
+                        image: AssetImage('assets/images/$image.jpg'))),
               )),
           // Positioned(
           //   bottom: 40,

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class popularHeroWidget extends StatelessWidget {
-
   final String eventType;
   final String eventName;
   final String image;
 
-  popularHeroWidget({required this.eventType, required this.eventName, required this.image});
+  popularHeroWidget(
+      {required this.eventType, required this.eventName, required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class popularHeroWidget extends StatelessWidget {
     );
   }
 
-  Stack _buildStack(BuildContext context){
+  Stack _buildStack(BuildContext context) {
     return Stack(
       children: [
         Hero(
@@ -32,13 +32,10 @@ class popularHeroWidget extends StatelessWidget {
               height: 350,
               width: double.infinity,
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/$image.jpg'),
-                  fit: BoxFit.cover
-                )
-              ),
-            )
-        ),
+                  image: DecorationImage(
+                      image: AssetImage('images/$image.jpg'),
+                      fit: BoxFit.cover)),
+            )),
         Positioned(
             top: 30,
             left: 10,
@@ -47,8 +44,7 @@ class popularHeroWidget extends StatelessWidget {
               icon: Icon(FontAwesomeIcons.arrowLeft),
               color: Colors.white,
               iconSize: 20,
-            )
-        ),
+            )),
       ],
     );
   }

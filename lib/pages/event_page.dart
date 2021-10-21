@@ -11,7 +11,7 @@ class _EventPage extends State<EventPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Center(
+      child: const Center(
         child: Text("Event"),
       ),
     );

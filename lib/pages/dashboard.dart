@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../models/events.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -15,11 +17,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Event> events = [];
   @override
   void initState() {
-    ApiConnection apiConnection = new ApiConnection();
+    ApiConnection apiConnection = ApiConnection();
     apiConnection.getEvents(
-        Uri.parse('https://event-corner.ken-techno.com/events-trending/'));
+        Uri.parse('https://event-corner.ken-techno.com/events-trending/'),
+        events);
+    print(events);
     super.initState();
   }
 
@@ -50,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             style: GoogleFonts.poppins(
                                 fontSize: 33,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xff4F2EAC))),
+                                color: const Color(0xff4F2EAC))),
                       )
                     ],
                   ),
@@ -67,11 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
               _searchBar(),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               _PopularEvents(),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               _categories(),
@@ -111,7 +116,7 @@ Container _searchBar() {
         ),
         Icon(
           FontAwesomeIcons.slidersH,
-          color: Color(0xff4F2EAC).withAlpha(100),
+          color: const Color(0xff4F2EAC).withAlpha(100),
         )
       ],
     ),

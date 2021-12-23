@@ -1,15 +1,22 @@
-import 'package:feshta/categories.dart';
+import 'package:feshta/widgets/categories.dart';
 import 'package:feshta/entity_slider.dart';
-import 'package:feshta/popular_events_widget.dart';
-import 'package:feshta/services/connection.dart';
+import 'package:feshta/models/event_categories.dart';
+import 'package:feshta/providers/artist_provider.dart';
+import 'package:feshta/providers/user_provider.dart';
+import 'package:feshta/widgets/event_detail_widget.dart.dart';
+import 'package:feshta/widgets/popular_events_widget.dart';
+import 'package:feshta/providers/event_provider.dart';
+import 'package:feshta/providers/host_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../models/events.dart';
 
 class MyHomePage extends StatefulWidget {
+  static const String homePageRoute = '/home';
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
@@ -18,321 +25,361 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Event> events = [];
-  @override
-  void initState() {
-    ApiConnection apiConnection = ApiConnection();
-    apiConnection.getEvents(
-        Uri.parse('https://event-corner.ken-techno.com/events-trending/'),
-        events);
-    print(events);
-    super.initState();
-  }
+  //List<EventCategories> categories = [];
+  bool _isInit = true;
+  bool _isSearch = false;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0, top: 10),
-                        child: Text(
-                          "July 9, 2021",
-                          style: GoogleFonts.poppins(
-                              color: Colors.grey, fontWeight: FontWeight.w700),
-                        ),
+        physics: const PageScrollPhysics(),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0, top: 7),
+                      child: Text(
+                        "${Provider.of<EventProvider>(context, listen: false).GetMonth(DateTime.now().toString())} ${DateTime.now().day.toString()}, ${DateTime.now().year.toString()}",
+                        style: GoogleFonts.poppins(
+                            color: Colors.grey, fontWeight: FontWeight.w700),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: Text("Discover Events",
-                            style: GoogleFonts.poppins(
-                                fontSize: 33,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xff4F2EAC))),
-                      )
-                    ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Text("Discover Events",
+                          style: GoogleFonts.poppins(
+                              fontSize: 33,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xff4F2EAC))),
+                    )
+                  ],
+                ),
+              ],
+            ),
+            _searchBar(),
+            const SizedBox(
+              height: 15,
+            ),
+            _isSearch ? Container() : _popularEvents(),
+            _isSearch
+                ? Container()
+                : const SizedBox(
+                    height: 15,
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 15.0, right: 20),
-                  //   child: Column(children: [
-                  //     CircleAvatar(
-                  //       radius: 25,
-                  //       backgroundImage: NetworkImage(
-                  //           "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
-                  //     ),
-                  //   ]),
-                  // ),
-                ],
+            _isSearch ? Container() : _buildCategoriesList(context),
+            //_entityDisplayer("trending"),
+            _isSearch ? Container() : _buildHostSlider(),
+            _isSearch ? Container() : _buildArtistSlider(),
+            _isSearch ? _buildSearchList() : Container(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _searchBar() {
+    return Container(
+      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.black38.withAlpha(7),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(20),
+        ),
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              onTap: () {
+                setState(() {
+                  _isSearch = true;
+                  events =
+                      Provider.of<EventProvider>(context, listen: false).events;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: "Search",
+                hintStyle: GoogleFonts.poppins(
+                    color: const Color(0xff4F2EAC).withAlpha(120)),
+                border: InputBorder.none,
               ),
-              _searchBar(),
-              const SizedBox(
-                height: 15,
+              onChanged: (String keyword) {
+                if (keyword.isEmpty) {
+                  setState(() {
+                    events = Provider.of<EventProvider>(context, listen: false)
+                        .events;
+                  });
+                } else {
+                  setState(() {
+                    events = Provider.of<EventProvider>(context, listen: false)
+                        .events
+                        .where((element) => element.name
+                            .toLowerCase()
+                            .contains(keyword.toLowerCase()))
+                        .toList();
+                  });
+                }
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              if (_isSearch) {
+                setState(() {
+                  _isSearch = false;
+                  events = [];
+                });
+              } else {
+                Navigator.pushNamed(context, '/filterPage');
+              }
+            },
+            icon: Icon(
+              _isSearch ? Icons.close : FontAwesomeIcons.slidersH,
+              color: const Color(0xff4F2EAC).withAlpha(100),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _popularEvents() {
+    return Provider.of<EventProvider>(context).trendingEvents.isEmpty
+        ? Container()
+        : SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text("POPULAR EVENTS",
+                          style: GoogleFonts.poppins(
+                              color: const Color(0xff4F2EAC),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 17)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: GestureDetector(
+                        onTap: () => Navigator.pushNamed(context, '/seeall',
+                            arguments: 'eventsTrending'),
+                        child: Text("More",
+                            style: GoogleFonts.poppins(
+                                color: const Color(0xff4F2EAC),
+                                fontWeight: FontWeight.w300,
+                                fontSize: 13)),
+                      ),
+                    ),
+                  ],
+                ),
+                Consumer<EventProvider>(
+                  builder: (ctx, eventProvider, _) => Container(
+                    height: 220,
+                    width: double.infinity,
+                    child: ListView.builder(
+                      itemCount: eventProvider.trendingEvents.length,
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemBuilder: (ctx, index) => PopularEventsWidget(
+                        eventName: eventProvider.trendingEvents[index].name,
+                        image: eventProvider.trendingEvents[index].image,
+                        id: eventProvider.trendingEvents[index].id,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
+  }
+
+  Widget _buildCategoriesList(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text("Categories",
+                  style: GoogleFonts.poppins(
+                      color: const Color(0xff4F2EAC),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20)),
+            )
+          ],
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/categories');
+          },
+          child: Container(
+            height: 110,
+            width: double.infinity,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount:
+                  Provider.of<EventProvider>(context).eventCategories.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (ctx, index) => CategoriesWidget(
+                id: Provider.of<EventProvider>(context)
+                    .eventCategories[index]
+                    .id,
+                name: Provider.of<EventProvider>(context)
+                    .eventCategories[index]
+                    .name,
+                image: Provider.of<EventProvider>(context)
+                    .eventCategories[index]
+                    .image,
               ),
-              _PopularEvents(),
-              const SizedBox(
-                height: 15,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildHostSlider() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text('Host',
+                  style: GoogleFonts.poppins(
+                      color: const Color(0xff4F2EAC),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GestureDetector(
+                onTap: () =>
+                    Navigator.pushNamed(context, '/seeall', arguments: 'hosts'),
+                child: Text("More",
+                    style: GoogleFonts.poppins(
+                        color: const Color(0xff4F2EAC),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14)),
               ),
-              _categories(),
-              _entityDisplayer("trending"),
-              _entityDisplayer("Host"),
-              _entityDisplayer("Artist")
-            ],
+            ),
+          ],
+        ),
+        Consumer<HostProvider>(
+          builder: (context, hostProvider, _) => Container(
+            height: 180,
+            width: double.infinity,
+            child: ListView.builder(
+              itemCount: hostProvider.hosts.length,
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemBuilder: (ctx, index) => EntitySliderWidget(
+                id: hostProvider.hosts[index].id,
+                name: hostProvider.hosts[index].name,
+                image: hostProvider.hosts[index].logo,
+                width: 150,
+                entityType: 'host',
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildArtistSlider() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text('Artist',
+                  style: GoogleFonts.poppins(
+                      color: const Color(0xff4F2EAC),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GestureDetector(
+                onTap: () => Navigator.pushNamed(context, '/seeall',
+                    arguments: 'artists'),
+                child: Text("More",
+                    style: GoogleFonts.poppins(
+                        color: const Color(0xff4F2EAC),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14)),
+              ),
+            ),
+          ],
+        ),
+        Consumer<ArtistProvider>(
+          builder: (context, artistProvider, _) => Container(
+            height: 180,
+            width: double.infinity,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: artistProvider.artists.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (ctx, index) => EntitySliderWidget(
+                id: artistProvider.artists[index].id,
+                name: artistProvider.artists[index].name,
+                image: artistProvider.artists[index].image,
+                width: 150,
+                entityType: 'artist',
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildSearchList() {
+    return ListView.builder(
+      physics: const PageScrollPhysics(),
+      itemCount: events.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventsDetailWidget(id: events[index].id),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          width: double.infinity,
+          height: 250,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0)),
+          child: Card(
+            child: Image(
+              image: NetworkImage(events[index].image),
+              fit: BoxFit.fill,
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-Container _searchBar() {
-  return Container(
-    margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-    decoration: BoxDecoration(
-      color: Colors.black38.withAlpha(7),
-      borderRadius: BorderRadius.all(
-        Radius.circular(20),
-      ),
-    ),
-    child: Row(
-      children: <Widget>[
-        Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: "Search",
-              hintStyle:
-                  GoogleFonts.poppins(color: Color(0xff4F2EAC).withAlpha(120)),
-              border: InputBorder.none,
-            ),
-            onChanged: (String keyword) {},
-          ),
-        ),
-        Icon(
-          FontAwesomeIcons.slidersH,
-          color: const Color(0xff4F2EAC).withAlpha(100),
-        )
-      ],
-    ),
-  );
-}
-
-Column _PopularEvents() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("POPULAR EVENTS",
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 17)),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("More",
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w300,
-                    fontSize: 13)),
-          ),
-        ],
-      ),
-      Container(
-        height: 220,
-        width: double.infinity,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            popularEventsWidget(
-              eventType: "Concert",
-              eventName: "Jano Tour",
-              image: "pexels-wolfgang-2747449",
-            ),
-            popularEventsWidget(
-              eventType: "Concert",
-              eventName: "Teddy Afro",
-              image: "pexels-josh-sorenson-976866",
-            ),
-            popularEventsWidget(
-              eventType: "Concert",
-              eventName: "Betty G",
-              image: "pexels-teddy-yang-2263436",
-            ),
-          ],
-        ),
-      )
-    ],
-  );
-}
-
-Column _forYou() {
-  return Column(
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("FOR YOU",
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 17)),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("More",
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w300,
-                    fontSize: 13)),
-          ),
-        ],
-      ),
-      Container(
-        height: 130,
-        width: double.infinity,
-        margin: EdgeInsets.all(10),
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(15),
-            image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(
-                    'https://images.unsplash.com/photo-1557672172-298e090bd0f1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80'))),
-      ),
-    ],
-  );
-}
-
-Column _categories() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("Categories",
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20)),
-          )
-        ],
-      ),
-      Container(
-        height: 110,
-        width: double.infinity,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            CategoriesWidget(
-              id: '1',
-              name: "Concert",
-              image: "pexels-wolfgang-2747449",
-            ),
-            CategoriesWidget(
-              id: '2',
-              name: "Art",
-              image: "pexels-josh-sorenson-976866",
-            ),
-            CategoriesWidget(
-              id: '3',
-              name: "Food",
-              image: "pexels-teddy-yang-2263436",
-            )
-          ],
-        ),
-      )
-    ],
-  );
-}
-
-Column _entityDisplayer(String component) {
-  String text = "";
-  switch (component.toLowerCase()) {
-    case "trending":
-      {
-        text = "Trending Events";
-        break;
-      }
-    case "host":
-      {
-        text = "Hosts";
-        break;
-      }
-    case "artist":
-      {
-        text = "Artists";
-        break;
-      }
-    default:
-  }
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(text,
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20)),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("More",
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14)),
-          ),
-        ],
-      ),
-      Container(
-        height: 180,
-        width: double.infinity,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            EntitySliderWidget(
-              id: '1',
-              name: "Concert",
-              image: "pexels-josh-sorenson-976866",
-              width: 150,
-            ),
-            EntitySliderWidget(
-              id: '2',
-              name: "Art",
-              image: "pexels-teddy-yang-2263436",
-              width: 150,
-            ),
-            EntitySliderWidget(
-              id: '3',
-              name: "Food",
-              image: "pexels-wolfgang-2747449",
-              width: 150,
-            )
-          ],
-        ),
-      )
-    ],
-  );
 }

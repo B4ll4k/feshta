@@ -1,40 +1,56 @@
 //import 'package:feshta/popular_events_hero_widget.dart';
+import 'package:feshta/widgets/artist_detail_widget.dart';
+import 'package:feshta/widgets/host_detail_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'widgets/event_detail_widget.dart.dart';
 
 class EntitySliderWidget extends StatelessWidget {
   final String id;
   final String name;
   final String image;
   final double width;
+  final String entityType;
 
-  EntitySliderWidget(
-      {required this.id,
-      required this.name,
-      required this.image,
-      required this.width});
+  const EntitySliderWidget({
+    Key? key,
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.width,
+    required this.entityType,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-//      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => popularHeroWidget(eventName: eventName, eventType: eventType, image: image,))),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => entityType.contains('event')
+              ? EventsDetailWidget(
+                  id: id,
+                )
+              : entityType.contains('host')
+                  ? HostDetailWidget(id: id)
+                  : ArtistDetailWidget(id: id),
+        ),
+      ),
       child: Stack(
         children: [
-          Hero(
-              tag: image,
-              child: Container(
-                height: 200,
-                //width: 170,
-                width: this.width,
-                margin: EdgeInsets.all(5),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage('assets/images/$image.jpg'))),
-              )),
+          Container(
+            height: 200,
+            //width: 170,
+            width: width,
+            margin: const EdgeInsets.all(5),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(15),
+                image: DecorationImage(
+                    fit: BoxFit.cover, image: NetworkImage(image))),
+          ),
           // Positioned(
           //   bottom: 40,
           //   left: 50,

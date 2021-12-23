@@ -1,17 +1,26 @@
 import 'package:feshta/entity_slider.dart';
+import 'package:feshta/providers/artist_provider.dart';
+import 'package:feshta/providers/event_provider.dart';
+import 'package:feshta/widgets/artist_detail_widget.dart';
+import 'package:feshta/widgets/artists_favorite_widet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../models/artists.dart';
+import '../providers/artist_provider.dart';
 
 class ArtistPage extends StatefulWidget {
-  const ArtistPage({Key? key}) : super(key: key);
+  ArtistPage({Key? key}) : super(key: key);
 
   @override
   _ArtistPageState createState() => _ArtistPageState();
 }
 
 class _ArtistPageState extends State<ArtistPage> {
+  bool _isSearch = false;
+  List<Artist> artists = [];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -19,159 +28,318 @@ class _ArtistPageState extends State<ArtistPage> {
         child: Container(
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0, top: 10),
-                        child: Text(
-                          "July 9, 2021",
-                          style: GoogleFonts.poppins(
-                              color: Colors.grey, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: Text("Artists",
-                            style: GoogleFonts.poppins(
-                                fontSize: 33,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff4F2EAC))),
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15.0, right: 20),
-                    child: Column(children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateColor.resolveWith(
-                                (states) => Colors.white),
-                            shadowColor: MaterialStateColor.resolveWith(
-                                (states) => Colors.white10)),
-                        onPressed: () {},
-                        child: Icon(
-                          Icons.search,
-                          size: 40,
-                          color: Color(0xff4F2EAC),
-                        ),
-                      ),
-                      // CircleAvatar(
-                      //   radius: 25,
-                      //   backgroundImage: NetworkImage(
-                      //       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
-                      // ),
-                    ]),
-                  ),
-                ],
+              _buildHeader(),
+              const SizedBox(
+                height: 15,
               ),
-              // _searchBar(),
-              // SizedBox(
+              _isSearch ? _buildSearchBar() : Container(),
+              _isSearch
+                  ? const SizedBox(
+                      height: 10,
+                    )
+                  : Container(),
+              _isSearch ? _buildSearchList() : Container(),
+              // _entityDisplayer("sponsored"),
+              // const SizedBox(
               //   height: 15,
               // ),
-              // _PopularEvents(),
-              // SizedBox(
-              //   height: 15,
-              // ),
-              // _categories(),
-              SizedBox(
+              _isSearch
+                  ? Container()
+                  : _buildArtistEntityDisplayer("Trending Artists"),
+              _isSearch
+                  ? Container()
+                  : const SizedBox(
+                      height: 15,
+                    ),
+              _isSearch
+                  ? Container()
+                  : _buildArtistEntityDisplayer("Recent Artists"),
+              _isSearch
+                  ? Container()
+                  : const SizedBox(
+                      height: 15,
+                    ),
+              _isSearch
+                  ? Container()
+                  : _buildArtistEntityDisplayer("Most Liked"),
+              const SizedBox(
                 height: 15,
               ),
-              _entityDisplayer("sponsored"),
-              SizedBox(
-                height: 15,
-              ),
-              _entityDisplayer("popular"),
-              SizedBox(
-                height: 15,
-              ),
-              _entityDisplayer("recent"),
-              SizedBox(
-                height: 15,
-              ),
-              _entityDisplayer("liked")
             ],
           ),
         ),
       ),
     );
   }
-}
 
-Column _entityDisplayer(String componentName) {
-  String text = "";
-  switch (componentName.toLowerCase()) {
-    case "popular":
-      {
-        text = "Popular Artists";
-        break;
-      }
-    case "recent":
-      {
-        text = "Recent Hosts";
-        break;
-      }
-    case "liked":
-      {
-        text = "Most Liked";
-        break;
-      }
-    default:
-  }
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(text,
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20)),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("More",
-                style: GoogleFonts.poppins(
-                    color: Color(0xff4F2EAC),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15)),
-          ),
-        ],
-      ),
-      Container(
-        height: 180,
-        width: double.infinity,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            EntitySliderWidget(
-              id: '1',
-              name: "Concert",
-              image: "pexels-josh-sorenson-976866",
-              width: 150,
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, top: 10),
+              child: Text(
+                "${Provider.of<EventProvider>(context, listen: false).GetMonth(DateTime.now().toString())} ${DateTime.now().day.toString()}, ${DateTime.now().year.toString()}",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey, fontWeight: FontWeight.w700),
+              ),
             ),
-            EntitySliderWidget(
-              id: '2',
-              name: "Art",
-              image: "pexels-teddy-yang-2263436",
-              width: 150,
-            ),
-            EntitySliderWidget(
-              id: '3',
-              name: "Food",
-              image: "pexels-wolfgang-2747449",
-              width: 150,
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Text("Artists",
+                  style: GoogleFonts.poppins(
+                      fontSize: 33,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xff4F2EAC))),
             )
           ],
         ),
-      )
-    ],
-  );
+        Padding(
+          padding: const EdgeInsets.only(right: 14.0),
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                if (_isSearch) {
+                  _isSearch = false;
+                  artists = [];
+                } else {
+                  _isSearch = true;
+                  artists = Provider.of<ArtistProvider>(context, listen: false)
+                      .artists;
+                }
+              });
+            },
+            icon: _isSearch
+                ? const Icon(
+                    Icons.close,
+                    size: 40,
+                    color: Color(0xff4F2EAC),
+                  )
+                : const Icon(
+                    Icons.search,
+                    size: 40,
+                    color: Color(0xff4F2EAC),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildArtistEntityDisplayer(String text) {
+    return Consumer<ArtistProvider>(
+      builder: (context, artistProvider, _) => text == 'Trending Artists'
+          ? artistProvider.trendingArtists.isNotEmpty
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHostTypeRow(text),
+                    Container(
+                      height: 180,
+                      width: double.infinity,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: artistProvider.trendingArtists.length,
+                          shrinkWrap: true,
+                          itemBuilder: (ctx, index) {
+                            return EntitySliderWidget(
+                              id: artistProvider.trendingArtists[index].id,
+                              name: artistProvider.trendingArtists[index].name,
+                              image:
+                                  artistProvider.trendingArtists[index].image,
+                              width: 150,
+                              entityType: 'artist',
+                            );
+                          }),
+                    ),
+                  ],
+                )
+              : Container()
+          : (text == 'Recent Artists'
+              ? artistProvider.recentlyPerformingArtists.isNotEmpty
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHostTypeRow(text),
+                        Container(
+                          height: 180,
+                          width: double.infinity,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: artistProvider
+                                  .recentlyPerformingArtists.length,
+                              shrinkWrap: true,
+                              itemBuilder: (ctx, index) {
+                                return EntitySliderWidget(
+                                  id: artistProvider
+                                      .recentlyPerformingArtists[index].id,
+                                  name: artistProvider
+                                      .recentlyPerformingArtists[index].name,
+                                  image: artistProvider
+                                      .recentlyPerformingArtists[index].image,
+                                  width: 150,
+                                  entityType: 'artist',
+                                );
+                              }),
+                        ),
+                      ],
+                    )
+                  : Container()
+              : (text == 'Most Liked')
+                  ? artistProvider.mostLikedArtists.isNotEmpty
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildHostTypeRow(text),
+                            Container(
+                              height: 180,
+                              width: double.infinity,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      artistProvider.mostLikedArtists.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: (ctx, index) {
+                                    return EntitySliderWidget(
+                                      id: artistProvider
+                                          .mostLikedArtists[index].id,
+                                      name: artistProvider
+                                          .mostLikedArtists[index].name,
+                                      image: artistProvider
+                                          .mostLikedArtists[index].image,
+                                      width: 150,
+                                      entityType: 'artist',
+                                    );
+                                  }),
+                            ),
+                          ],
+                        )
+                      : Container()
+                  : Container()),
+    );
+  }
+
+  Widget _buildHostTypeRow(String text) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(text,
+              style: GoogleFonts.poppins(
+                  color: const Color(0xff4F2EAC),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 20)),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: GestureDetector(
+            onTap: () {
+              if (text.toLowerCase() == 'trending artists') {
+                Navigator.pushNamed(context, '/seeall',
+                    arguments: 'artistsTrending');
+              } else if (text.toLowerCase() == 'most liked') {
+                Navigator.pushNamed(context, '/seeall',
+                    arguments: 'mostLikedArtists');
+              } else if (text.toLowerCase() == 'recent artists') {
+                Navigator.pushNamed(context, '/seeall',
+                    arguments: 'recentArtists');
+              }
+            },
+            child: Text("More",
+                style: GoogleFonts.poppins(
+                    color: const Color(0xff4F2EAC),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.black38.withAlpha(7),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(20),
+        ),
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Search",
+                hintStyle: GoogleFonts.poppins(
+                    color: const Color(0xff4F2EAC).withAlpha(120)),
+                border: InputBorder.none,
+              ),
+              onChanged: (String keyword) {
+                if (keyword.isEmpty) {
+                  setState(() {
+                    artists =
+                        Provider.of<ArtistProvider>(context, listen: false)
+                            .artists;
+                  });
+                } else {
+                  setState(() {
+                    artists =
+                        Provider.of<ArtistProvider>(context, listen: false)
+                            .artists
+                            .where((element) => element.name
+                                .toLowerCase()
+                                .contains(keyword.toLowerCase()))
+                            .toList();
+                  });
+                }
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.search,
+              color: const Color(0xff4F2EAC).withAlpha(100),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchList() {
+    return ListView.builder(
+      physics: const PageScrollPhysics(),
+      itemCount: artists.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => (ArtistDetailWidget(id: artists[index].id)),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          width: double.infinity,
+          height: 250,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0)),
+          child: Card(
+            child: Image(
+              image: NetworkImage(artists[index].image),
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

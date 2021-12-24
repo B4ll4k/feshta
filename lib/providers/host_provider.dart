@@ -61,6 +61,7 @@ class HostProvider with ChangeNotifier {
       final response = await http
           .post(Uri.parse(EnviromentVariables.baseUrl + 'hosts-show/'));
       final hostData = json.decode(response.body) as List<dynamic>;
+      _hosts = [];
       for (var host in hostData) {
         _hosts.add(
           Host(

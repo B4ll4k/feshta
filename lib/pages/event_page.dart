@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -9,36 +10,41 @@ class EventPage extends StatelessWidget {
   const EventPage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    var eventsProvider = Provider.of<EventProvider>(context, listen: false);
+    var eventsProvider = Provider.of<EventProvider>(context);
     var dates = eventsProvider.dates;
     var events = eventsProvider.events;
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        physics: const ScrollPhysics(),
-        child: Column(
-          children: [
-            _buildHeader(GetMonth: eventsProvider.GetMonth),
-            ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(4),
-                shrinkWrap: true,
-                itemCount: dates.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return EventsCard(
-                      events.firstWhere((element) =>
-                          element.start
-                              .compareTo(DateTime.parse(dates[index])) ==
-                          0),
-                      dates.length);
-                }),
-          ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Provider.of<EventProvider>(context, listen: false).fetchEvents();
+      },
+      child: SafeArea(
+        child: SingleChildScrollView(
+          physics: const ScrollPhysics(),
+          child: Column(
+            children: [
+              _buildHeader(context, GetMonth: eventsProvider.GetMonth),
+              ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(4),
+                  shrinkWrap: true,
+                  itemCount: dates.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return EventsCard(
+                        events.firstWhere((element) =>
+                            element.start
+                                .compareTo(DateTime.parse(dates[index])) ==
+                            0),
+                        dates.length);
+                  }),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader({required Function GetMonth}) {
+  Widget _buildHeader(BuildContext context, {required Function GetMonth}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -69,8 +75,10 @@ class EventPage extends StatelessWidget {
           padding: const EdgeInsets.only(top: 18.0),
           child: Column(children: [
             IconButton(
-              icon: const Icon(Icons.filter),
-              onPressed: () {},
+              icon: const Icon(FontAwesomeIcons.slidersH),
+              onPressed: () {
+                Navigator.pushNamed(context, '/filterPage');
+              },
               color: const Color(0xff4F2EAC),
             ),
           ]),

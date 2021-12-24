@@ -23,49 +23,61 @@ class _ArtistPageState extends State<ArtistPage> {
   List<Artist> artists = [];
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              _buildHeader(),
-              const SizedBox(
-                height: 15,
-              ),
-              _isSearch ? _buildSearchBar() : Container(),
-              _isSearch
-                  ? const SizedBox(
-                      height: 10,
-                    )
-                  : Container(),
-              _isSearch ? _buildSearchList() : Container(),
-              // _entityDisplayer("sponsored"),
-              // const SizedBox(
-              //   height: 15,
-              // ),
-              _isSearch
-                  ? Container()
-                  : _buildArtistEntityDisplayer("Trending Artists"),
-              _isSearch
-                  ? Container()
-                  : const SizedBox(
-                      height: 15,
-                    ),
-              _isSearch
-                  ? Container()
-                  : _buildArtistEntityDisplayer("Recent Artists"),
-              _isSearch
-                  ? Container()
-                  : const SizedBox(
-                      height: 15,
-                    ),
-              _isSearch
-                  ? Container()
-                  : _buildArtistEntityDisplayer("Most Liked"),
-              const SizedBox(
-                height: 15,
-              ),
-            ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchArtists();
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchTrendingArtists();
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchMostLikedArtists();
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchRecentlyPreformingArtists();
+      },
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              children: [
+                _buildHeader(),
+                const SizedBox(
+                  height: 15,
+                ),
+                _isSearch ? _buildSearchBar() : Container(),
+                _isSearch
+                    ? const SizedBox(
+                        height: 10,
+                      )
+                    : Container(),
+                _isSearch ? _buildSearchList() : Container(),
+                // _entityDisplayer("sponsored"),
+                // const SizedBox(
+                //   height: 15,
+                // ),
+                _isSearch
+                    ? Container()
+                    : _buildArtistEntityDisplayer("Trending Artists"),
+                _isSearch
+                    ? Container()
+                    : const SizedBox(
+                        height: 15,
+                      ),
+                _isSearch
+                    ? Container()
+                    : _buildArtistEntityDisplayer("Recent Artists"),
+                _isSearch
+                    ? Container()
+                    : const SizedBox(
+                        height: 15,
+                      ),
+                _isSearch
+                    ? Container()
+                    : _buildArtistEntityDisplayer("Most Liked"),
+                const SizedBox(
+                  height: 15,
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -53,33 +53,41 @@ class _TicketsPageState extends State<TicketsPage> {
           style: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
-      body: Consumer<TicketProvider>(
-        builder: (BuildContext context, ticketProvider, _) {
-          return ticketProvider.activeTickets.isEmpty
-              ? const Center(
-                  child: Text('No active tickets!'),
-                )
-              : ListView.builder(
-                  itemCount: ticketProvider.activeTickets.length,
-                  itemBuilder: (ctx, index) => ListTile(
-                    onTap: () {
-                      _showTicketQRCode(ticketProvider.tickets[index].qr);
-                    },
-                    leading: Container(
-                      height: 50,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                              ticketProvider.activeTickets[index].image),
-                          fit: BoxFit.cover,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Provider.of<TicketProvider>(context, listen: false)
+              .fetchActiveTickets();
+          Provider.of<TicketProvider>(context, listen: false)
+              .isActiveTicketsFetchedSetter = true;
+        },
+        child: Consumer<TicketProvider>(
+          builder: (BuildContext context, ticketProvider, _) {
+            return ticketProvider.activeTickets.isEmpty
+                ? const Center(
+                    child: Text('No active tickets!'),
+                  )
+                : ListView.builder(
+                    itemCount: ticketProvider.activeTickets.length,
+                    itemBuilder: (ctx, index) => ListTile(
+                      onTap: () {
+                        _showTicketQRCode(ticketProvider.tickets[index].qr);
+                      },
+                      leading: Container(
+                        height: 50,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                                ticketProvider.activeTickets[index].image),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
+                      title: Text(ticketProvider.activeTickets[index].name),
                     ),
-                    title: Text(ticketProvider.activeTickets[index].name),
-                  ),
-                );
-        },
+                  );
+          },
+        ),
       ),
     );
   }

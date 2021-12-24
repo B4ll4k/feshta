@@ -438,10 +438,7 @@ class _AuthCardState extends State<AuthCard> {
           _authData['password'],
           true,
           _authData['email']);
-      setState(() {
-        _isLoading = false;
-        Navigator.pushReplacementNamed(context, '/tabPage');
-      });
+      Navigator.pushReplacementNamed(context, '/tabPage');
     } on HttpException catch (error) {
       setState(() {
         _isLoading = false;

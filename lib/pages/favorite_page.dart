@@ -23,6 +23,7 @@ class _FavoritePageState extends State<FavoritePage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: Theme.of(context).primaryColor,
           title: const Text('Favorites'),
           bottom: const TabBar(

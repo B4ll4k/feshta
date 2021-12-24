@@ -31,53 +31,75 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        physics: const PageScrollPhysics(),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20.0, top: 7),
-                      child: Text(
-                        "${Provider.of<EventProvider>(context, listen: false).GetMonth(DateTime.now().toString())} ${DateTime.now().day.toString()}, ${DateTime.now().year.toString()}",
-                        style: GoogleFonts.poppins(
-                            color: Colors.grey, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: Text("Discover Events",
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Provider.of<EventProvider>(context, listen: false).fetchEvents();
+        await Provider.of<HostProvider>(context, listen: false).fetchHosts();
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchArtists();
+        await Provider.of<EventProvider>(context, listen: false)
+            .fetchTrendingEvents();
+        await Provider.of<HostProvider>(context, listen: false)
+            .fetchTrendingHosts();
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchTrendingArtists();
+        await Provider.of<EventProvider>(context, listen: false)
+            .fetchCategories();
+        await Provider.of<HostProvider>(context, listen: false)
+            .fetchMostLikedHosts();
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchMostLikedArtists();
+        await Provider.of<ArtistProvider>(context, listen: false)
+            .fetchRecentlyPreformingArtists();
+      },
+      child: SafeArea(
+        child: SingleChildScrollView(
+          physics: const PageScrollPhysics(),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0, top: 7),
+                        child: Text(
+                          "${Provider.of<EventProvider>(context, listen: false).GetMonth(DateTime.now().toString())} ${DateTime.now().day.toString()}, ${DateTime.now().year.toString()}",
                           style: GoogleFonts.poppins(
-                              fontSize: 33,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xff4F2EAC))),
-                    )
-                  ],
-                ),
-              ],
-            ),
-            _searchBar(),
-            const SizedBox(
-              height: 15,
-            ),
-            _isSearch ? Container() : _popularEvents(),
-            _isSearch
-                ? Container()
-                : const SizedBox(
-                    height: 15,
+                              color: Colors.grey, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: Text("Discover Events",
+                            style: GoogleFonts.poppins(
+                                fontSize: 33,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xff4F2EAC))),
+                      )
+                    ],
                   ),
-            _isSearch ? Container() : _buildCategoriesList(context),
-            //_entityDisplayer("trending"),
-            _isSearch ? Container() : _buildHostSlider(),
-            _isSearch ? Container() : _buildArtistSlider(),
-            _isSearch ? _buildSearchList() : Container(),
-          ],
+                ],
+              ),
+              _searchBar(),
+              const SizedBox(
+                height: 15,
+              ),
+              _isSearch ? Container() : _popularEvents(),
+              _isSearch
+                  ? Container()
+                  : const SizedBox(
+                      height: 15,
+                    ),
+              _isSearch ? Container() : _buildCategoriesList(context),
+              //_entityDisplayer("trending"),
+              _isSearch ? Container() : _buildHostSlider(),
+              _isSearch ? Container() : _buildArtistSlider(),
+              _isSearch ? _buildSearchList() : Container(),
+            ],
+          ),
         ),
       ),
     );

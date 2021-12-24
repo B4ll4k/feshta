@@ -58,6 +58,7 @@ class ArtistProvider with ChangeNotifier {
       final response = await http
           .post(Uri.parse(EnviromentVariables.baseUrl + 'artists-show/'));
       final responseData = jsonDecode(response.body) as List<dynamic>;
+      _artists = [];
       for (var artist in responseData) {
         _artists.add(Artist(
           id: artist['id'].toString(),

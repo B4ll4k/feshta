@@ -22,54 +22,65 @@ class _HostPageState extends State<HostPage> {
   bool _isSearch = false;
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              header(),
-              // _searchBar(),
-              // SizedBox(
-              //   height: 15,
-              // ),
-              // _PopularEvents(),
-              // SizedBox(
-              //   height: 15,
-              // ),
-              // _categories(),
-              _isSearch
-                  ? const SizedBox(
-                      height: 10,
-                    )
-                  : Container(),
-              _isSearch ? _buildSearchBar() : Container(),
-              _isSearch
-                  ? Container()
-                  : const SizedBox(
-                      height: 15,
-                    ),
-              _isSearch ? Container() : _hostEntityDisplayer("Sponsored Hosts"),
-              const SizedBox(
-                height: 15,
-              ),
-              _isSearch ? Container() : _hostEntityDisplayer("Popular Hosts"),
-              _isSearch
-                  ? Container()
-                  : const SizedBox(
-                      height: 15,
-                    ),
-              // _hostEntityDisplayer("Recent Hosts"),
-              // const SizedBox(
-              //   height: 15,
-              // ),
-              _isSearch ? Container() : _hostEntityDisplayer("Most Liked"),
-              _isSearch
-                  ? Container()
-                  : const SizedBox(
-                      height: 15,
-                    ),
-              _isSearch ? _buildSearchList() : Container(),
-            ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Provider.of<HostProvider>(context, listen: false).fetchHosts();
+        await Provider.of<HostProvider>(context, listen: false)
+            .fetchTrendingHosts();
+        await Provider.of<HostProvider>(context, listen: false)
+            .fetchMostLikedHosts();
+      },
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              children: [
+                header(),
+                // _searchBar(),
+                // SizedBox(
+                //   height: 15,
+                // ),
+                // _PopularEvents(),
+                // SizedBox(
+                //   height: 15,
+                // ),
+                // _categories(),
+                _isSearch
+                    ? const SizedBox(
+                        height: 10,
+                      )
+                    : Container(),
+                _isSearch ? _buildSearchBar() : Container(),
+                _isSearch
+                    ? Container()
+                    : const SizedBox(
+                        height: 15,
+                      ),
+                _isSearch
+                    ? Container()
+                    : _hostEntityDisplayer("Sponsored Hosts"),
+                const SizedBox(
+                  height: 15,
+                ),
+                _isSearch ? Container() : _hostEntityDisplayer("Popular Hosts"),
+                _isSearch
+                    ? Container()
+                    : const SizedBox(
+                        height: 15,
+                      ),
+                // _hostEntityDisplayer("Recent Hosts"),
+                // const SizedBox(
+                //   height: 15,
+                // ),
+                _isSearch ? Container() : _hostEntityDisplayer("Most Liked"),
+                _isSearch
+                    ? Container()
+                    : const SizedBox(
+                        height: 15,
+                      ),
+                _isSearch ? _buildSearchList() : Container(),
+              ],
+            ),
           ),
         ),
       ),

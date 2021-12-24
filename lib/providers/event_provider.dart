@@ -71,6 +71,8 @@ class EventProvider with ChangeNotifier {
       if (eventsData.isEmpty) {
         return true;
       }
+      _events = [];
+      _dates = [];
       eventsData.forEach((date, eventData) {
         for (var e in eventData) {
           var event = Event(
@@ -168,7 +170,7 @@ class EventProvider with ChangeNotifier {
       final response = await http
           .get(Uri.parse(EnviromentVariables.baseUrl + 'categories-show/'));
       final resposeData = jsonDecode(response.body) as List<dynamic>;
-
+      _eventCategories = [];
       for (var item in resposeData) {
         var cat = item as Map<String, dynamic>;
         _eventCategories.add(

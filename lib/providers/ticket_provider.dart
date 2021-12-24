@@ -55,6 +55,11 @@ class TicketProvider with ChangeNotifier {
       if (responseData.isEmpty) {
         return;
       }
+      for (var i = 0; i < _tickets.length; i++) {
+        if (_tickets[i].isActive) {
+          _tickets.removeAt(i);
+        }
+      }
       for (var ticketData in responseData) {
         final t = ticketData as Map<String, dynamic>;
         _tickets.add(
@@ -91,6 +96,11 @@ class TicketProvider with ChangeNotifier {
       final responseData = jsonDecode(response.body) as List<dynamic>;
       if (responseData.isEmpty) {
         return;
+      }
+      for (var i = 0; i < _tickets.length; i++) {
+        if (_tickets[i].isPast) {
+          _tickets.removeAt(i);
+        }
       }
       for (var ticketData in responseData) {
         final t = ticketData as Map<String, dynamic>;

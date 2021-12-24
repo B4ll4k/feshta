@@ -39,12 +39,12 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<void> fetchCarts() async {
-    _carts = [];
     try {
       final response = await http.post(
           Uri.parse(EnviromentVariables.baseUrl + 'api/cart'),
           headers: headers);
       final responseData = jsonDecode(response.body) as List<dynamic>;
+      _carts = [];
       print(responseData);
       for (var cartData in responseData) {
         final cart = cartData as Map<String, dynamic>;

@@ -93,7 +93,9 @@ class EventProvider with ChangeNotifier {
             price: e['price'] ?? '0',
             artistsId: [],
           );
-          _events.add(event);
+          if (!_events.contains(event)) {
+            _events.add(event);
+          }
           if (!_dates.contains(date)) {
             _dates.add(date);
           }
@@ -368,9 +370,6 @@ class EventProvider with ChangeNotifier {
     String day = '';
     var date = DateTime.parse(dateString);
     switch (date.weekday) {
-      case 0:
-        day = "SUN";
-        break;
       case 1:
         day = "MON";
         break;
@@ -388,6 +387,10 @@ class EventProvider with ChangeNotifier {
         break;
       case 6:
         day = "SAT";
+        break;
+      case 7:
+        day = "SUN";
+        break;
     }
     //print(day);
     return day;

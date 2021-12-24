@@ -1,3 +1,4 @@
+import 'package:feshta/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -101,18 +102,20 @@ class HostDetailWidget extends StatelessWidget {
             iconSize: 20,
           ),
         ),
-        Positioned(
-          top: 30,
-          right: 45,
-          child: IconButton(
-            onPressed: () {},
-            icon: host!.isFavorite
-                ? const Icon(Icons.favorite)
-                : const Icon(Icons.favorite_border),
-            color: Colors.white,
-            iconSize: 30,
-          ),
-        ),
+        Provider.of<UserProvider>(context).isAuth
+            ? Positioned(
+                top: 30,
+                right: 45,
+                child: IconButton(
+                  onPressed: () {},
+                  icon: host!.isFavorite
+                      ? const Icon(Icons.favorite)
+                      : const Icon(Icons.favorite_border),
+                  color: Colors.white,
+                  iconSize: 30,
+                ),
+              )
+            : Container(),
         Positioned(
           top: 28,
           right: 5,

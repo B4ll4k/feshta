@@ -31,11 +31,19 @@ class EventPage extends StatelessWidget {
                   itemCount: dates.length,
                   itemBuilder: (BuildContext context, int index) {
                     return EventsCard(
-                        events.firstWhere((element) =>
-                            element.start
-                                .compareTo(DateTime.parse(dates[index])) ==
-                            0),
-                        dates.length);
+                      events.firstWhere((element) =>
+                          element.start
+                              .compareTo(DateTime.parse(dates[index])) ==
+                          0),
+                      events
+                          .where(
+                            (element) => element.start.isAtSameMomentAs(
+                              DateTime.parse(dates[index]),
+                            ),
+                          )
+                          .toList()
+                          .length,
+                    );
                   }),
             ],
           ),

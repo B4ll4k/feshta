@@ -1,3 +1,4 @@
+import 'package:feshta/size_config.dart';
 import 'package:feshta/widgets/event_detail_widget.dart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,34 +98,55 @@ class _CategoriesPageState extends State<CategoriesPage> {
         .events
         .where((element) => element.categoryIds[0] == _categoryId)
         .toList();
-    return GridView.builder(
-        scrollDirection: Axis.vertical,
-        physics: const PageScrollPhysics(),
-        padding: const EdgeInsets.all(5.0),
-        shrinkWrap: true,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        itemCount: events.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          EventsDetailWidget(id: events[index].id)));
-            },
-            child: Container(
-              margin: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(events[index].image),
-                    fit: BoxFit.cover),
+    return events.isEmpty
+        ? Column(
+            children: [
+              const SizedBox(
+                height: 10,
               ),
+              Container(
+                width: SizeConfig.screenWidth - 30,
+                height: SizeConfig.screenHeight / 3,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/error.jpg'),
+                  ),
+                ),
+              ),
+              const Text(
+                'No Events in this Category!',
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          )
+        : GridView.builder(
+            scrollDirection: Axis.vertical,
+            physics: const PageScrollPhysics(),
+            padding: const EdgeInsets.all(5.0),
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
             ),
-          );
-        });
+            itemCount: events.length,
+            itemBuilder: (BuildContext context, int index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EventsDetailWidget(id: events[index].id)));
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(5.0),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(events[index].image),
+                        fit: BoxFit.cover),
+                  ),
+                ),
+              );
+            });
     //return Container();
   }
 }

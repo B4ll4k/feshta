@@ -2,7 +2,6 @@ import 'package:feshta/size_config.dart';
 import 'package:feshta/widgets/event_detail_widget.dart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/event_provider.dart';

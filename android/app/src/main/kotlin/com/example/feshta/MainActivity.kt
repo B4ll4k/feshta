@@ -1,4 +1,4 @@
-package com.kentechno.feshta
+package com.kentechno.Feshta
 
 import io.flutter.embedding.android.FlutterActivity
 

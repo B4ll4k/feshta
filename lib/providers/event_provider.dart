@@ -155,10 +155,11 @@ class EventProvider with ChangeNotifier {
         return false;
       }
       for (var e in eventsData) {
-        for (var event in _events) {
-          event.id == e['id']
-              ? event.isTrending = true
-              : event.isTrending = false;
+        final e2 = e as Map<String, dynamic>;
+        final event =
+            _events.firstWhereOrNull((element) => element.id == e2['id']);
+        if (event != null) {
+          event.isTrending = true;
         }
       }
       //print(json.decode(response.body));

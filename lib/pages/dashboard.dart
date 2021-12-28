@@ -1,13 +1,10 @@
 import 'package:feshta/widgets/categories.dart';
 import 'package:feshta/entity_slider.dart';
-import 'package:feshta/models/event_categories.dart';
 import 'package:feshta/providers/artist_provider.dart';
-import 'package:feshta/providers/user_provider.dart';
 import 'package:feshta/widgets/event_detail_widget.dart.dart';
 import 'package:feshta/widgets/popular_events_widget.dart';
 import 'package:feshta/providers/event_provider.dart';
 import 'package:feshta/providers/host_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -87,14 +84,19 @@ class _MyHomePageState extends State<MyHomePage> {
               const SizedBox(
                 height: 15,
               ),
-              _isSearch ? Container() : _popularEvents(),
+              _isSearch ? Container() : _sponsoredEvents(),
               _isSearch
                   ? Container()
                   : const SizedBox(
                       height: 15,
                     ),
               _isSearch ? Container() : _buildCategoriesList(context),
-              //_entityDisplayer("trending"),
+              _isSearch
+                  ? Container()
+                  : const SizedBox(
+                      height: 8.0,
+                    ),
+              _isSearch ? Container() : _buildTrendingEvents(),
               _isSearch ? Container() : _buildHostSlider(),
               _isSearch ? Container() : _buildArtistSlider(),
               _isSearch ? _buildSearchList() : Container(),
@@ -172,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _popularEvents() {
+  Widget _sponsoredEvents() {
     return Provider.of<EventProvider>(context).trendingEvents.isEmpty
         ? Container()
         : SingleChildScrollView(
@@ -185,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text("POPULAR EVENTS",
+                      child: Text("SPONSORED EVENTS",
                           style: GoogleFonts.poppins(
                               color: const Color(0xff4F2EAC),
                               fontWeight: FontWeight.w700,
@@ -195,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: GestureDetector(
                         onTap: () => Navigator.pushNamed(context, '/seeall',
-                            arguments: 'eventsTrending'),
+                            arguments: 'sponsoredHosts'),
                         child: Text("More",
                             style: GoogleFonts.poppins(
                                 color: const Color(0xff4F2EAC),
@@ -210,13 +212,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 220,
                     width: double.infinity,
                     child: ListView.builder(
-                      itemCount: eventProvider.trendingEvents.length,
+                      itemCount: eventProvider.sponsoredEvents.length,
                       scrollDirection: Axis.horizontal,
                       shrinkWrap: true,
                       itemBuilder: (ctx, index) => PopularEventsWidget(
-                        eventName: eventProvider.trendingEvents[index].name,
-                        image: eventProvider.trendingEvents[index].image,
-                        id: eventProvider.trendingEvents[index].id,
+                        eventName: '',
+                        image: eventProvider.sponsoredEvents[index].image,
+                        id: eventProvider.sponsoredEvents[index].id,
                       ),
                     ),
                   ),
@@ -322,6 +324,59 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ],
     );
+  }
+
+  Widget _buildTrendingEvents() {
+    return Provider.of<EventProvider>(context).sponsoredEvents.length > 0
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text('Trending Events',
+                        style: GoogleFonts.poppins(
+                            color: const Color(0xff4F2EAC),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/seeall',
+                          arguments: 'eventsTrending'),
+                      child: Text("More",
+                          style: GoogleFonts.poppins(
+                              color: const Color(0xff4F2EAC),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14)),
+                    ),
+                  ),
+                ],
+              ),
+              Consumer<EventProvider>(
+                builder: (context, eventProvider, _) => Container(
+                  height: 180,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    itemCount: eventProvider.trendingEvents.length,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (ctx, index) => EntitySliderWidget(
+                      id: eventProvider.trendingEvents[index].id,
+                      name: eventProvider.trendingEvents[index].name,
+                      image: eventProvider.trendingEvents[index].image,
+                      width: 150,
+                      entityType: 'event',
+                    ),
+                  ),
+                ),
+              )
+            ],
+          )
+        : Container();
   }
 
   Widget _buildArtistSlider() {

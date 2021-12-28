@@ -32,7 +32,9 @@ class EntitySliderWidget extends StatelessWidget {
                 )
               : entityType.contains('host')
                   ? HostDetailWidget(id: id)
-                  : ArtistDetailWidget(id: id),
+                  : entityType.contains('artist')
+                      ? ArtistDetailWidget(id: id)
+                      : EventsDetailWidget(id: id),
         ),
       ),
       child: Stack(

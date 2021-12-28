@@ -312,7 +312,7 @@ class _EventsDetailWidgetState extends State<EventsDetailWidget> {
           width: 10.0,
         ),
         Text(
-          event!.start.toIso8601String(),
+          "${Provider.of<EventProvider>(context, listen: false).GetMonth(event!.start.toString())} ${event!.start.day.toString()}, ${event!.start.year.toString()}",
           style: const TextStyle(
               color: Colors.black54, fontSize: 18, fontWeight: FontWeight.w700),
         )

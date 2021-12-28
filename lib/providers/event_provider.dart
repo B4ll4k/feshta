@@ -45,6 +45,10 @@ class EventProvider with ChangeNotifier {
     return [..._events.where((element) => element.isFavorite == true)];
   }
 
+  List<Event> get sponsoredEvents {
+    return [..._events.where((element) => element.isSponsored == true)];
+  }
+
   set tokenSetter(String token) {
     _token = token;
   }

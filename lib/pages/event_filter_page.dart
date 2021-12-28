@@ -80,12 +80,13 @@ class _EventFilterPageState extends State<EventFilterPage> {
                   },
                   elevation: 20,
                   padding: const EdgeInsets.all(8),
-                  backgroundColor:
-                      _isSelected[index] ? Colors.blue : Colors.blue[50],
+                  backgroundColor: _isSelected[index]
+                      ? Theme.of(context).primaryColor
+                      : Colors.blue[50],
                   shadowColor: Colors.white10,
                   avatar: _isSelected[index]
-                      ? const CircleAvatar(
-                          backgroundColor: Colors.blue,
+                      ? CircleAvatar(
+                          backgroundColor: Theme.of(context).primaryColor,
                           backgroundImage: AssetImage('assets/images/tick.png'),
                         )
                       : null, //CircleAvatar
@@ -93,7 +94,9 @@ class _EventFilterPageState extends State<EventFilterPage> {
                     eventProvider.eventCategories[index].name,
                     style: TextStyle(
                         fontSize: 15,
-                        color: _isSelected[index] ? Colors.white : Colors.blue),
+                        color: _isSelected[index]
+                            ? Colors.white
+                            : Theme.of(context).primaryColor),
                   ), //Text
                 ),
               ),

@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.feshta">
+    package="com.kentechno.feshta">
    <application
-        android:label="feshta"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Feshta"
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

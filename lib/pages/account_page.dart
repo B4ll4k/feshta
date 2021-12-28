@@ -1,6 +1,3 @@
-import 'package:feshta/providers/artist_provider.dart';
-import 'package:feshta/providers/event_provider.dart';
-import 'package:feshta/providers/host_provider.dart';
 import 'package:feshta/providers/ticket_provider.dart';
 import 'package:feshta/providers/user_provider.dart';
 import 'package:flutter/material.dart';

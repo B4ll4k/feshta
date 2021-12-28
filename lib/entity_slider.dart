@@ -1,7 +1,5 @@
-//import 'package:feshta/popular_events_hero_widget.dart';
 import 'package:feshta/widgets/artist_detail_widget.dart';
 import 'package:feshta/widgets/host_detail_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'widgets/event_detail_widget.dart.dart';

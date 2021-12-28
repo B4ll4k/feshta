@@ -1,14 +1,10 @@
 import 'dart:io';
-import 'package:feshta/models/cart.dart';
 import 'package:feshta/pages/cart_page.dart';
 import 'package:feshta/pages/categories_page.dart';
 import 'package:feshta/pages/dashboard.dart';
 import 'package:feshta/pages/event_filter_page.dart';
-import 'package:feshta/pages/event_page.dart';
 import 'package:feshta/pages/events_filtered_page.dart';
 import 'package:feshta/pages/favorite_page.dart';
-import 'package:feshta/pages/host_page.dart';
-import 'package:feshta/pages/account_page.dart';
 import 'package:feshta/pages/see_all_page.dart';
 import 'package:feshta/pages/splash_screen.dart';
 import 'package:feshta/pages/tab_page.dart';
@@ -25,7 +21,6 @@ import 'package:feshta/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +39,6 @@ void main() async {
 
       serviceWorkerController.serviceWorkerClient = AndroidServiceWorkerClient(
         shouldInterceptRequest: (request) async {
-          print(request);
           return null;
         },
       );

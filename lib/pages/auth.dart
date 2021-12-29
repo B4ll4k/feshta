@@ -78,7 +78,7 @@ class AuthScreen extends StatelessWidget {
                     child: Container(
                       width: 170,
                       height: 170,
-                      child: Image.asset('assets/images/logo.png'),
+                      child: Image.asset('assets/images/icon.png'),
                     ),
                   ),
                   Flexible(

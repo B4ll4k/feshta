@@ -2,9 +2,7 @@ import 'package:feshta/entity_slider.dart';
 import 'package:feshta/providers/event_provider.dart';
 import 'package:feshta/providers/host_provider.dart';
 import 'package:feshta/widgets/host_detail_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
